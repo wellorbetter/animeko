@@ -359,16 +359,22 @@ private fun AniAppContentImpl(
                 val navigator = LocalNavigator.current
                 val vm = viewModel(key = route.toString()) { SearchViewModel(route.toQuery()) }
 
-                SearchScreen(
-                    vm,
-                    onNavigateBack = {
-                        aniNavigator.popBackStack()
-                    },
-                    onNavigateToEpisodeDetails = { subjectId, episodeId ->
-                        navigator.navigateEpisodeDetails(subjectId, episodeId)
-                    },
-                    windowInsets = windowInsets,
-                )
+                CompositionLocalProvider(
+                    LocalSharedTransitionScopeProvider provides SharedTransitionScopeProvider(
+                        this@SharedTransitionLayout, this,
+                    ),
+                ) {
+                    SearchScreen(
+                        vm,
+                        onNavigateBack = {
+                            aniNavigator.popBackStack()
+                        },
+                        onNavigateToEpisodeDetails = { subjectId, episodeId ->
+                            navigator.navigateEpisodeDetails(subjectId, episodeId)
+                        },
+                        windowInsets = windowInsets,
+                    )
+                }
             }
             composable<NavRoutes.SubjectDetail>(
                 enterTransition = enterTransition,
